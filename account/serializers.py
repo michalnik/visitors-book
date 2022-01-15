@@ -4,6 +4,8 @@ from rest_framework.serializers import ModelSerializer
 
 
 class UserSerializer(ModelSerializer):
+    """Serializer for customized User to login with email and password
+    """
     class Meta:
         model = get_user_model()
         fields = ["id", "username", "email", "password"]

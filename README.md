@@ -1,3 +1,15 @@
+# How to run it?
+
+```bash
+# to database migrations and load fixtures to see something
+make loadfixtures
+
+# to run django development server
+make run
+```
+
+For other possibilities run `make all` or read the `Makefile`.
+
 # visitors-book
 Visits of restaurants online as a book for other people to get knowledge where to go for a good meal
 
@@ -31,16 +43,16 @@ Visits of restaurants online as a book for other people to get knowledge where t
 
 ***
 
-* [ ] **III. Tests**
-  * [ ] suggest a way to run tests
-  * [ ] use django unittest module and or / pousks(what is that???)
-  * [ ] **Bonuses**
-    * [ ]  use fixtures in testing
+* [x] **III. Tests**
+  * [x] suggest a way to run tests
+  * [x] use django unittest module and or / pousks(what is that???)
+  * [x] **Bonuses**
+    * [x]  use fixtures in testing
 
 ***
 
-* [ ] **IV. Project Launch**
-  * [ ] use **docker** (DockerFile, docker-compose, docker-compose.yml) to run **Django** and **PostgreSQL**
-  * [ ] script for easy execution - **Makefile**
-  * [ ] **Bonuses**
-    * [ ] pass env variables to differenciate between development and production startup
+* [x] **IV. Project Launch**
+  * [x] use **docker** (DockerFile, docker-compose, docker-compose.yml) to run **Django** and **PostgreSQL**
+  * [x] script for easy execution - **Makefile**
+  * [x] **Bonuses**
+    * [x] pass env variables to differenciate between development and production startup

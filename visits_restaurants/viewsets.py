@@ -15,7 +15,11 @@ class UpdateRestaurantMixin(mixins.UpdateModelMixin):
         serializer.save(creator=self.request.user)
 
 
-class RestaurantViewset(CreateRestaurantMixin, UpdateRestaurantMixin, viewsets.ModelViewSet):
+class RestaurantViewset(  # pylint: disable=too-many-ancestors
+    CreateRestaurantMixin, UpdateRestaurantMixin,
+        viewsets.ModelViewSet):
+    """This viewset opens endpoints for restaurant creation and updating
+    """
     queryset = Restaurant.objects.all()
     serializer_class = RestaurantSerializer
     filter_backends = [filters.OrderingFilter]
@@ -23,7 +27,10 @@ class RestaurantViewset(CreateRestaurantMixin, UpdateRestaurantMixin, viewsets.M
     ordering = ["pk"]
 
 
-class RestaurantAggregatedViewset(viewsets.ReadOnlyModelViewSet):
+class RestaurantAggregatedViewset(  # pylint: disable=too-many-ancestors
+        viewsets.ReadOnlyModelViewSet):
+    """This viewset opens summary endpoints for listing and detail view
+    """
     queryset = Restaurant.objects.all()
     serializer_class = RestaurantAggregatedSerializer
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]

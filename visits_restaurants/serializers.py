@@ -4,6 +4,8 @@ from visits_restaurants.models import Restaurant, Visit
 
 
 class RestaurantSerializer(serializers.ModelSerializer):
+    """Restaurant serializer excluding a creator from writing
+    """
     class Meta:
         model = Restaurant
         fields = "__all__"
@@ -11,6 +13,8 @@ class RestaurantSerializer(serializers.ModelSerializer):
 
 
 class VisitSerializer(serializers.ModelSerializer):
+    """Visit serializer excluding a date of creation from writing
+    """
     class Meta:
         model = Visit
         fields = "__all__"
@@ -18,8 +22,10 @@ class VisitSerializer(serializers.ModelSerializer):
 
 
 class VisitsDateSerializer(serializers.Serializer):
-    def to_representation(self, data):
-        return data.date
+    """Auxiliary serializer if visits generates only dates in a list
+    """
+    def to_representation(self, instance):
+        return instance.date
 
     def create(self, validated_data):
         raise NotImplementedError()
@@ -29,6 +35,8 @@ class VisitsDateSerializer(serializers.Serializer):
 
 
 class RestaurantAggregatedSerializer(serializers.ModelSerializer):
+    """Serializer aggregating visits for summary view
+    """
     aggregates = serializers.SerializerMethodField()
     visits = VisitsDateSerializer(many=True)
 

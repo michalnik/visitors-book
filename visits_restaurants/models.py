@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 
 
+# pylint: disable=missing-class-docstring
 class Restaurant(models.Model):
     class Cuisine(models.TextChoices):
         CZECH = "CZ", "Czech"
@@ -25,7 +26,7 @@ class Restaurant(models.Model):
 
 
 class Visit(models.Model):
-    class Evaluations(models.TextChoices):
+    class Evaluations(models.IntegerChoices):
         ONE = 1, "Terrible"
         TWO = 2, "Not so bad"
         THREE = 3, "Good"

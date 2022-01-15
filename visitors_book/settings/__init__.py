@@ -78,9 +78,13 @@ WSGI_APPLICATION = "visitors_book.wsgi.application"
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'visitor',
+        'USER': 'visitor',
+        'PASSWORD': 'v1s170r',
+        'HOST': 'db',
+        'PORT': '5432',
     }
 }
 

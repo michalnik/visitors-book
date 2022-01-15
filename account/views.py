@@ -6,6 +6,8 @@ from account.serializers import UserSerializer
 
 # Create your views here.
 class RegisterView(CreateAPIView):
+    """Enable register user with username, email and password
+    """
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.AllowAny]

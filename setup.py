@@ -10,13 +10,14 @@ setup(
     url="https://github.com/michalnik/visitors-book",
     install_requires=[
         "django~=3.2",
-        "djangorestframework~=3.12",
-        "djangorestframework-simplejwt~=4.8",
-        "psycopg2-binary~=2.9",
-        "requests~=2.27",
+        "djangorestframework",
+        "djangorestframework-simplejwt",
+        "psycopg2-binary",
+        "requests",
     ],
     extras_require={
         "devel": [
+            "coverage~=6.2",
             "ipython~=7.31",
             "rich~=11.0",
             "mock~=4.0",

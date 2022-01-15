@@ -5,6 +5,8 @@ from visits_restaurants.serializers import VisitSerializer
 
 
 class CreateVisitView(generics.CreateAPIView):
+    """It opens endpoint for creating visit only for restaurant creators
+    """
     queryset = Visit.objects.all()
     serializer_class = VisitSerializer
 

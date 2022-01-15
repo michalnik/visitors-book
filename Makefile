@@ -1,12 +1,10 @@
-.PHONY: all clean manage db-migrations db-migrate db-superuser run
+
+.PHONY: all clean run shell lint tests django-test python-coverage
 
 SHELL := /bin/bash
 
 # specify environment
-ENVIRONMENT ?= development
-
-# pip install options (target specific)
-VENV_PIP_INSTALL_OPTION := -e .[devel]
+export ENVIRONMENT ?= development
 
 # project directories
 DIR_APP := visitors_book
@@ -14,92 +12,88 @@ DIR_ACCOUNT_MODELS := account
 DIR_VISITS_RESTAURANTS_MODELS := visits_restaurants
 DIR_ACCOUNT_MIGRATIONS := account/migrations
 DIR_VISITS_RESTAURANTS_MIGRATIONS := visits_restaurants/migrations
-
-# Python virtual environment location
-VENV_NAME ?= venv
-VENV_BIN := $(VENV_NAME)/bin
-
-# Python virtual environment applications
-PYTHON := $(VENV_BIN)/python3
-DJANGO := $(PYTHON) -m django
+DIR_ACCOUNT_FIXTURES := account/fixtures
+DIR_VISITS_RESTAURANTS_FIXTURES := visits_restaurants/fixtures
 
 # some other auxiliary variables
 MIGRATIONS_ACCOUNT := $(shell ls $(DIR_ACCOUNT_MIGRATIONS)/*.py)
 MIGRATIONS_VISITS_RESTAURANTS := $(shell ls $(DIR_VISITS_RESTAURANTS_MIGRATIONS)/*.py)
 MODELS_ACCOUNT := $(DIR_ACCOUNT_MODELS)/models.py
 MODELS_VISITS_RESTAURANTS := $(DIR_VISITS_RESTAURANTS_MODELS)/models.py
+FIXTURES_ACCOUNT := $(shell ls $(DIR_ACCOUNT_FIXTURES))
+FIXTURES_VISITS_RESTAURANTS := $(shell ls $(DIR_VISITS_RESTAURANTS_FIXTURES))
+FIXTURE_ACCOUNT_FILES := $(shell for fixture in $(FIXTURES_ACCOUNT); do echo "$(DIR_ACCOUNT_FIXTURES)/$$fixture"; done)
+FIXTURE_VISITS_RESTAURANTS_FILES := $(shell for fixture in $(FIXTURES_VISITS_RESTAURANTS); do echo "$(DIR_VISITS_RESTAURANTS_FIXTURES)/$$fixture"; done)
 
-# which settings to use in CLI manage.py the script of Django
-export PYTHONPATH := $(CURDIR)
-export DJANGO_SETTINGS_MODULE := $(DIR_APP).settings.$(ENVIRONMENT)
-
+# docker container names
+CON_NMS := visitorsbook_db_1 visitorsbook_api_1
 
 all:
 	@echo "make"
 	@echo "    Print this help."
-	@echo "make pre-install"
-	@echo "    Install tools to create python virtual environment."
-	@echo "make venv-python"
-	@echo "    Install Python and Django requirements."
 	@echo "make clean"
-	@echo "    Cleans the project files from virtual environment"
-	@echo "make manage"
-	@echo "    It runs django-admin command. Other cli arguments can be passed via cli variable"
-	@echo "    like this :"
-	@echo "      make manage cli=\"shell\""
-	@echo "        or"
-	@echo "      make manage cli=\"migrate\""
+	@echo "    It cleans the project files from database migrations and docker things and others..."
+	@echo "make makemigrations"
+	@echo "    It calls django-admin makemigrations."
+	@echo "make migrate"
+	@echo "    It calls django-admin migrate."
 	@echo "make run"
-	@echo "    It runs Django development server on localhost at port 8000"
-	@echo "make db-migrations"
-	@echo "    It runs django-admin command - makemigrations. It creates"
-	@echo "    migrations if it is needed."
-	@echo "make db-migrate"
-	@echo "    It runs django-admin command - migrate. It applies database migrations on"
-	@echo "    database."
+	@echo "    It runs Django development server at port 8000."
+	@echo "make loadfixtures"
+	@echo "    It load fixtures into database to have some tests data in it."
+	@echo "make shell"
+	@echo "    It runs django-admin shell command to inspect database models or code ..."
+	@echo "make tests"
+	@echo "    It runs django-admin test command with coverage report."
+	@echo "make lint"
+	@echo "    It runs linting of source code with pylint."
 
-
-sql-lite-spatial: /tmp/visitors-book-sql-lite-spatial
-/tmp/visitors-book-sql-lite-spatial:
-	sudo apt install binutils libproj-dev gdal-bin libsqlite3-mod-spatialite
-	touch /tmp/visitors-book-sql-lite-spatial
-
-pre-install: sql-lite-spatial /tmp/visitors-book-pre-install
-/tmp/visitors-book-pre-install:
-	which python3 || sudo apt-get install -y python3
-	which pip || sudo apt-get install -y python3-pip
-	which virtualenv || sudo python3 -m pip install virtualenv
-	touch /tmp/visitors-book-pre-install
-
-venv-python: pre-install /tmp/visitors-book-venv-python
-/tmp/visitors-book-venv-python: setup.py
-	test -d $(VENV_NAME) || virtualenv -p python3 $(VENV_NAME)
-	$(PYTHON) -m pip install -U pip setuptools
-	$(PYTHON) -m pip install $(VENV_PIP_INSTALL_OPTION)
-	touch /tmp/visitors-book-venv-python
 
 clean:
 	rm -f -v /tmp/visitors-book-*
-	rm -rf -v $(VENV_NAME)
-	rm -f -v $(DIR_APP)/db.sqlite3
 	rm -f -v $(DIR_ACCOUNT_MIGRATIONS)/*.py
 	rm -f -v $(DIR_VISITS_RESTAURANTS_MIGRATIONS)/*.py
 	touch $(DIR_ACCOUNT_MIGRATIONS)/__init__.py
 	touch $(DIR_VISITS_RESTAURANTS_MIGRATIONS)/__init__.py
+	sudo docker stop $(CON_NMS) || echo "cannot stop docker container"
+	sudo docker rm $(CON_NMS) || echo "cannot remove docker container"
+	sudo docker rmi visitor:latest || echo "cannot remove docker image"
 
 
-run: venv-python
-	$(DJANGO) runserver 127.0.0.1:8000
+build-visitor-latest: /tmp/visitors-book-docker-image
+/tmp/visitors-book-docker-image:
+	sudo docker build --no-cache --build-arg ENVIRONMENT=$(ENVIRONMENT) -t visitor:latest .
+	touch /tmp/visitors-book-docker-image
+makemigrations: build-visitor-latest $(MODELS_ACCOUNT) $(MODELS_VISITS_RESTAURANTS) /tmp/visitors-book-makemigrations
+/tmp/visitors-book-makemigrations:
+	sudo -E docker-compose run api makemigrations
+	touch /tmp/visitors-book-makemigrations
+migrate: makemigrations $(MIGRATIONS_ACCOUNT) $(MIGRATIONS_VISITS_RESTAURANTS) /tmp/visitors-book-migrate
+/tmp/visitors-book-migrate:
+	sudo -E docker-compose run api migrate
+	touch /tmp/visitors-book-migrate
+loadfixtures: migrate /tmp/visitors-book-load-fixtures
+/tmp/visitors-book-load-fixtures:
+	sudo -E docker-compose run api loaddata $(FIXTURE_ACCOUNT_FILES) $(FIXTURE_VISITS_RESTAURANTS_FILES)
+	touch /tmp/visitors-book-load-fixtures
 
-manage: venv-python
-	$(DJANGO) $(cli);
+
+tests: django-test python-coverage
+django-test:
+	sudo -E docker-compose run --entrypoint 'python -m coverage' api run \
+--source="visits_restaurants" manage.py test
+python-coverage:
+	sudo -E docker-compose run --entrypoint 'python -m coverage' api report
 
 
-db-migrations: venv-python $(MODELS_ACCOUNT) $(MODELS_VISITS_RESTAURANTS)
-	$(DJANGO) makemigrations
+lint:
+	sudo -E docker-compose run --entrypoint 'python -m pylint' api --rcfile=pylintrc \
+account visitors_book visits_restaurants
 
-db-migrate: venv-python $(MIGRATIONS_ACCOUNT) $(MIGRATIONS_VISITS_RESTAURANTS)
-	$(DJANGO) migrate
 
-db-superuser: venv-python
-	$(DJANGO) createsuperuser
+run: migrate
+	sudo -E docker-compose up api
+
+
+shell: migrate
+	sudo -E docker-compose run api shell
