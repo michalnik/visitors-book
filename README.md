@@ -1,7 +1,7 @@
 # How to run it?
 
 ```bash
-# to database migrations and load fixtures to see something
+# database migrations and load fixtures to see something
 make loadfixtures
 
 # to run django development server
