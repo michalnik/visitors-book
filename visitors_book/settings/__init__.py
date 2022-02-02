@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "account",
-    "visits_restaurants"
+    "visits_restaurants",
+    "drf_spectacular"
 ]
 
 MIDDLEWARE = [
@@ -142,5 +143,19 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 10
+    "PAGE_SIZE": 10,
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema"
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Visitors Book API",
+    "DESCRIPTION": """Aim of this task is to create `restaurant visit diary`.
+    Our users like travel and they would like to write down their own reviews restaurants
+    they have visited to know where to go next / to whom to recommend.
+    It is therefore necessary to record the Restaurant and the Visit. At the Restaurant
+    it is necessary to know the name, place, type (type of cuisine). The visit should records
+    the date of the visit, the expense, a note (where the user can write down what he / she has
+    given and other findings) and an evaluation (values ranging from 1 to 5).
+    """,
+    "VERSION": "1.0.0"
 }

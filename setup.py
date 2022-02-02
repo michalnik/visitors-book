@@ -14,6 +14,7 @@ setup(
         "djangorestframework-simplejwt",
         "psycopg2-binary",
         "requests",
+        "drf-spectacular"
     ],
     extras_require={
         "devel": [

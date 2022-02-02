@@ -1,3 +1,4 @@
+from typing import Dict
 from django.db.models import Avg, Sum
 from rest_framework import serializers
 from visits_restaurants.models import Restaurant, Visit
@@ -44,5 +45,5 @@ class RestaurantAggregatedSerializer(serializers.ModelSerializer):
         model = Restaurant
         exclude = ["creator"]
 
-    def get_aggregates(self, obj):
+    def get_aggregates(self, obj: Restaurant) -> Dict[str, float]:
         return obj.visits.aggregate(rating=Avg("evaluation"), spending=Sum("expense"))
