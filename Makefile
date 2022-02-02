@@ -91,7 +91,8 @@ account visitors_book visits_restaurants
 
 run: migrate
 	sudo -E docker-compose up api
-
-
 shell: migrate
 	sudo -E docker-compose run api shell
+openapi: migrate schema.yml
+schema.yml:
+	sudo -E docker-compose run api spectacular --file schema.yml --validate
