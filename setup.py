@@ -9,8 +9,8 @@ setup(
     author_email="michal.mladek.78@gmail.com",
     url="https://github.com/michalnik/visitors-book",
     install_requires=[
-        "django~=3.2",
-        "djangorestframework",
+        "django<3.3",
+        "djangorestframework<3.13",
         "djangorestframework-simplejwt",
         "psycopg2-binary",
         "requests",

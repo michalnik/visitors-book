@@ -25,8 +25,6 @@ FIXTURES_VISITS_RESTAURANTS := $(shell ls $(DIR_VISITS_RESTAURANTS_FIXTURES))
 FIXTURE_ACCOUNT_FILES := $(shell for fixture in $(FIXTURES_ACCOUNT); do echo "$(DIR_ACCOUNT_FIXTURES)/$$fixture"; done)
 FIXTURE_VISITS_RESTAURANTS_FILES := $(shell for fixture in $(FIXTURES_VISITS_RESTAURANTS); do echo "$(DIR_VISITS_RESTAURANTS_FIXTURES)/$$fixture"; done)
 
-# docker container names
-CON_NMS := visitorsbook_db_1 visitorsbook_api_1
 
 all:
 	@echo "make"
@@ -55,8 +53,8 @@ clean:
 	rm -f -v $(DIR_VISITS_RESTAURANTS_MIGRATIONS)/*.py
 	touch $(DIR_ACCOUNT_MIGRATIONS)/__init__.py
 	touch $(DIR_VISITS_RESTAURANTS_MIGRATIONS)/__init__.py
-	sudo docker stop $(CON_NMS) || echo "cannot stop docker container"
-	sudo docker rm $(CON_NMS) || echo "cannot remove docker container"
+	sudo docker stop $(shell sudo docker ps -a -q --filter name=visitorsbook*) || echo "cannot stop docker container"
+	sudo docker rm $(shell sudo docker ps -a -q --filter name=visitorsbook*) || echo "cannot remove docker container"
 	sudo docker rmi visitor:latest || echo "cannot remove docker image"
 
 
