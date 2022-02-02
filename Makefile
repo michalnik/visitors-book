@@ -53,9 +53,9 @@ clean:
 	rm -f -v $(DIR_VISITS_RESTAURANTS_MIGRATIONS)/*.py
 	touch $(DIR_ACCOUNT_MIGRATIONS)/__init__.py
 	touch $(DIR_VISITS_RESTAURANTS_MIGRATIONS)/__init__.py
-	sudo docker stop $(shell sudo docker ps -a -q --filter name=visitorsbook*) || echo "cannot stop docker container"
-	sudo docker rm $(shell sudo docker ps -a -q --filter name=visitorsbook*) || echo "cannot remove docker container"
-	sudo docker rmi visitor:latest || echo "cannot remove docker image"
+	@sudo docker stop $(shell sudo docker ps -a -q --filter name=visitorsbook*) || echo "cannot stop docker container"
+	@sudo docker rm $(shell sudo docker ps -a -q --filter name=visitorsbook*) || echo "cannot remove docker container"
+	@sudo docker rmi visitor:latest || echo "cannot remove docker image"
 
 
 build-visitor-latest: /tmp/visitors-book-docker-image
