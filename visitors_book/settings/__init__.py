@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "account",
     "visits_restaurants",
+    "django_celery_results",
     "drf_spectacular"
 ]
 
@@ -146,6 +147,10 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 10,
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema"
 }
+
+CELERY_BROKER_URL = "amqp://guest:guest@broker:5672//"
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_CACHE_BACKEND = "django-cache"
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Visitors Book API",

@@ -96,3 +96,6 @@ shell: migrate
 openapi: migrate schema.yml
 schema.yml:
 	sudo -E docker-compose run api spectacular --file schema.yml --validate
+
+celery: migrate
+	sudo -E docker-compose run --entrypoint 'python -m celery' api -A visitors_book worker -l INFO

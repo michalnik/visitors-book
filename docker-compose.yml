@@ -14,6 +14,7 @@ services:
         target: /usr/src/app
     depends_on:
       - db
+      - broker
     ports:
       - "8000:8000"
   db:
@@ -25,3 +26,8 @@ services:
       POSTGRES_PASSWORD: v1s170r
     ports:
       - "5432:5432"
+  broker:
+    image: rabbitmq
+    restart: on-failure
+    ports:
+      - "5672:5672"

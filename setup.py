@@ -14,6 +14,8 @@ setup(
         "djangorestframework-simplejwt",
         "psycopg2-binary",
         "requests",
+        "celery",
+        "django-celery-results",
         "drf-spectacular"
     ],
     extras_require={
